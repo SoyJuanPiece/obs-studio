@@ -632,10 +632,18 @@ bool OBSBasic::InitBasicConfigDefaults()
 
 	config_set_default_string(activeConfiguration, "SimpleOutput", "FilePath", GetDefaultVideoSavePath().c_str());
 	config_set_default_string(activeConfiguration, "SimpleOutput", "RecFormat2", DEFAULT_CONTAINER);
+#ifdef OBS_LOW_END_PROFILE
+	config_set_default_uint(activeConfiguration, "SimpleOutput", "VBitrate", 2500);
+#else
 	config_set_default_uint(activeConfiguration, "SimpleOutput", "VBitrate", 6000);
+#endif
 	config_set_default_uint(activeConfiguration, "SimpleOutput", "ABitrate", 160);
 	config_set_default_bool(activeConfiguration, "SimpleOutput", "UseAdvanced", false);
+#ifdef OBS_LOW_END_PROFILE
+	config_set_default_string(activeConfiguration, "SimpleOutput", "Preset", "ultrafast");
+#else
 	config_set_default_string(activeConfiguration, "SimpleOutput", "Preset", "veryfast");
+#endif
 	config_set_default_string(activeConfiguration, "SimpleOutput", "NVENCPreset2", "p5");
 	config_set_default_string(activeConfiguration, "SimpleOutput", "RecQuality", "Stream");
 	config_set_default_bool(activeConfiguration, "SimpleOutput", "RecRB", false);
@@ -684,6 +692,12 @@ bool OBSBasic::InitBasicConfigDefaults()
 	config_set_default_bool(activeConfiguration, "AdvOut", "RecRB", false);
 	config_set_default_uint(activeConfiguration, "AdvOut", "RecRBTime", 20);
 	config_set_default_int(activeConfiguration, "AdvOut", "RecRBSize", 512);
+
+#ifdef OBS_LOW_END_PROFILE
+	/* Low-end profile: start with a 720p canvas instead of the monitor resolution */
+	cx = 1280;
+	cy = 720;
+#endif
 
 	config_set_default_uint(activeConfiguration, "Video", "BaseCX", cx);
 	config_set_default_uint(activeConfiguration, "Video", "BaseCY", cy);

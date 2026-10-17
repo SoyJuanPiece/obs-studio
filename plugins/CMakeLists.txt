@@ -43,28 +43,32 @@ macro(check_obs_websocket)
 endmacro()
 
 # Add plugins in alphabetical order to retain order in IDE projects
-add_core_module(
-    aja
-    PLATFORMS WINDOWS MACOS LINUX
-    WITH_MESSAGE
-)
-add_core_module(aja-output-ui PLATFORMS WINDOWS MACOS LINUX WITH_MESSAGE)
+if(NOT ENABLE_LOW_END)
+  add_core_module(
+      aja
+      PLATFORMS WINDOWS MACOS LINUX
+      WITH_MESSAGE
+  )
+  add_core_module(aja-output-ui PLATFORMS WINDOWS MACOS LINUX WITH_MESSAGE)
+endif()
 add_core_module(coreaudio-encoder PLATFORMS WINDOWS MACOS)
-add_core_module(
-    decklink
-    PLATFORMS WINDOWS MACOS LINUX
-    WITH_MESSAGE
-)
-add_core_module(
-    decklink-captions
-    PLATFORMS WINDOWS MACOS LINUX
-    WITH_MESSAGE
-)
-add_core_module(
-    decklink-output-ui
-    PLATFORMS WINDOWS MACOS LINUX
-    WITH_MESSAGE
-)
+if(NOT ENABLE_LOW_END)
+  add_core_module(
+      decklink
+      PLATFORMS WINDOWS MACOS LINUX
+      WITH_MESSAGE
+  )
+  add_core_module(
+      decklink-captions
+      PLATFORMS WINDOWS MACOS LINUX
+      WITH_MESSAGE
+  )
+  add_core_module(
+      decklink-output-ui
+      PLATFORMS WINDOWS MACOS LINUX
+      WITH_MESSAGE
+  )
+endif()
 add_core_module(
     frontend-tools
     PLATFORMS WINDOWS MACOS LINUX
@@ -98,11 +102,13 @@ add_core_module(
 )
 add_core_module(obs-text PLATFORMS WINDOWS)
 add_core_module(obs-transitions)
-add_core_module(
-    obs-vst
-    PLATFORMS WINDOWS MACOS LINUX
-    WITH_MESSAGE
-)
+if(NOT ENABLE_LOW_END)
+  add_core_module(
+      obs-vst
+      PLATFORMS WINDOWS MACOS LINUX
+      WITH_MESSAGE
+  )
+endif()
 add_core_module(obs-webrtc)
 
 check_obs_websocket()
@@ -112,7 +118,9 @@ add_core_module(oss-audio PLATFORMS FREEBSD OPENBSD)
 add_core_module(rtmp-services)
 add_core_module(sndio PLATFORMS LINUX FREEBSD OPENBSD)
 add_core_module(text-freetype2)
-add_core_module(vlc-video WITH_MESSAGE)
+if(NOT ENABLE_LOW_END)
+  add_core_module(vlc-video WITH_MESSAGE)
+endif()
 add_core_module(win-capture PLATFORMS WINDOWS)
 add_core_module(win-dshow PLATFORMS WINDOWS)
 add_core_module(win-wasapi PLATFORMS WINDOWS)

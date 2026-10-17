@@ -379,7 +379,11 @@ void OBSApp::InitUserConfigDefaults()
 
 	config_set_default_string(userConfig, "General", "HotkeyFocusType", "NeverDisableHotkeys");
 
+#ifdef OBS_LOW_END_PROFILE
+	config_set_default_bool(userConfig, "BasicWindow", "PreviewEnabled", false);
+#else
 	config_set_default_bool(userConfig, "BasicWindow", "PreviewEnabled", true);
+#endif
 	config_set_default_bool(userConfig, "BasicWindow", "PreviewProgramMode", false);
 	config_set_default_bool(userConfig, "BasicWindow", "SceneDuplicationMode", true);
 	config_set_default_bool(userConfig, "BasicWindow", "SwapScenesMode", true);
