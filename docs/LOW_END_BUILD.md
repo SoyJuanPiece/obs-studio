@@ -52,6 +52,12 @@ cualquier momento, y una configuración existente no se modifica.
 - **Medidores de audio a ~30 Hz** en vez de ~60 Hz
   (`frontend/components/VolumeMeter.cpp`).
 - **Escalado bilineal** por defecto (solo afecta cuando hay que escalar).
+- **Preset de QuickSync corregido.** El menú de preset del modo simple
+  (Speed / Balanced / Quality) guardaba el valor en `preset`, pero el encoder
+  de QuickSync lee `target_usage`, así que el menú no tenía efecto. Ahora se
+  pasa a `target_usage`. Esto afecta a todas las compilaciones, no solo al
+  perfil ligero; con la configuración por defecto (balanced) el resultado no
+  cambia. El perfil ligero usa `speed` (TU7) por defecto.
 
 Estos cambios no quitan funciones: la vista previa sigue funcionando, solo se
 actualiza menos seguido.

@@ -645,6 +645,10 @@ bool OBSBasic::InitBasicConfigDefaults()
 	config_set_default_string(activeConfiguration, "SimpleOutput", "Preset", "veryfast");
 #endif
 	config_set_default_string(activeConfiguration, "SimpleOutput", "NVENCPreset2", "p5");
+#ifdef OBS_LOW_END_PROFILE
+	/* Low-end profile: QuickSync "speed" target usage (TU7) to save GPU load */
+	config_set_default_string(activeConfiguration, "SimpleOutput", "QSVPreset", "speed");
+#endif
 	config_set_default_string(activeConfiguration, "SimpleOutput", "RecQuality", "Stream");
 	config_set_default_bool(activeConfiguration, "SimpleOutput", "RecRB", false);
 	config_set_default_int(activeConfiguration, "SimpleOutput", "RecRBTime", 20);

@@ -325,6 +325,12 @@ void SimpleOutput::Update()
 		obs_data_set_string(videoSettings, "preset", preset);
 	}
 
+	/* The QSV encoder reads "target_usage" (speed / balanced / quality or TU1-TU7),
+	 * not "preset", so the simple-mode QSV preset must be passed through here. */
+	if (strcmp(encoder, SIMPLE_ENCODER_QSV) == 0 || strcmp(encoder, SIMPLE_ENCODER_QSV_AV1) == 0) {
+		obs_data_set_string(videoSettings, "target_usage", (preset && *preset) ? preset : "balanced");
+	}
+
 	obs_data_set_string(videoSettings, "rate_control", "CBR");
 	obs_data_set_int(videoSettings, "bitrate", videoBitrate);
 
