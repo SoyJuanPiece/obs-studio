@@ -633,7 +633,7 @@ bool OBSBasic::InitBasicConfigDefaults()
 	config_set_default_string(activeConfiguration, "SimpleOutput", "FilePath", GetDefaultVideoSavePath().c_str());
 	config_set_default_string(activeConfiguration, "SimpleOutput", "RecFormat2", DEFAULT_CONTAINER);
 #ifdef OBS_LOW_END_PROFILE
-	config_set_default_uint(activeConfiguration, "SimpleOutput", "VBitrate", 2500);
+	config_set_default_uint(activeConfiguration, "SimpleOutput", "VBitrate", 3500);
 #else
 	config_set_default_uint(activeConfiguration, "SimpleOutput", "VBitrate", 6000);
 #endif
@@ -750,9 +750,16 @@ bool OBSBasic::InitBasicConfigDefaults()
 	}
 
 	config_set_default_uint(activeConfiguration, "Video", "FPSType", 0);
+#ifdef OBS_LOW_END_PROFILE
+	/* Low-end profile: 60 FPS target */
+	config_set_default_string(activeConfiguration, "Video", "FPSCommon", "60");
+	config_set_default_uint(activeConfiguration, "Video", "FPSInt", 60);
+	config_set_default_uint(activeConfiguration, "Video", "FPSNum", 60);
+#else
 	config_set_default_string(activeConfiguration, "Video", "FPSCommon", "30");
 	config_set_default_uint(activeConfiguration, "Video", "FPSInt", 30);
 	config_set_default_uint(activeConfiguration, "Video", "FPSNum", 30);
+#endif
 	config_set_default_uint(activeConfiguration, "Video", "FPSDen", 1);
 	config_set_default_string(activeConfiguration, "Video", "ScaleType", "bicubic");
 	config_set_default_string(activeConfiguration, "Video", "ColorFormat", "NV12");
@@ -779,11 +786,16 @@ void OBSBasic::InitBasicConfigDefaults2()
 {
 	bool oldEncDefaults = config_get_bool(App()->GetUserConfig(), "General", "Pre23Defaults");
 	bool useNV = EncoderAvailable("ffmpeg_nvenc") && !oldEncDefaults;
+#ifdef OBS_LOW_END_PROFILE
+	/* Low-end profile: use Intel QuickSync when there is no NVENC */
+	bool useQSV = !useNV && !oldEncDefaults && EncoderAvailable("obs_qsv11");
+	const char *simpleEncoder = useNV ? SIMPLE_ENCODER_NVENC : (useQSV ? SIMPLE_ENCODER_QSV : SIMPLE_ENCODER_X264);
+#else
+	const char *simpleEncoder = useNV ? SIMPLE_ENCODER_NVENC : SIMPLE_ENCODER_X264;
+#endif
 
-	config_set_default_string(activeConfiguration, "SimpleOutput", "StreamEncoder",
-				  useNV ? SIMPLE_ENCODER_NVENC : SIMPLE_ENCODER_X264);
-	config_set_default_string(activeConfiguration, "SimpleOutput", "RecEncoder",
-				  useNV ? SIMPLE_ENCODER_NVENC : SIMPLE_ENCODER_X264);
+	config_set_default_string(activeConfiguration, "SimpleOutput", "StreamEncoder", simpleEncoder);
+	config_set_default_string(activeConfiguration, "SimpleOutput", "RecEncoder", simpleEncoder);
 
 	const char *aac_default = "ffmpeg_aac";
 	if (EncoderAvailable("CoreAudio_AAC")) {

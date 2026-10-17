@@ -33,18 +33,31 @@ y los módulos de captura de tu plataforma.
 | Ajuste | Estándar | Low-End |
 |---|---|---|
 | Resolución base (canvas) | Resolución del monitor (máx. 1920x1080) | 1280x720 |
+| FPS | 30 | 60 |
 | Vista previa | Activada | Desactivada |
-| Bitrate de transmisión (modo simple) | 6000 kbps | 2500 kbps |
-| Preset x264 (modo simple) | veryfast | ultrafast |
+| Codificador (modo simple) | NVENC si existe, si no x264 | NVENC si existe, si no QuickSync (Intel), si no x264 |
+| Bitrate de transmisión (modo simple) | 6000 kbps | 3500 kbps |
+| Preset x264 (modo simple, solo si se usa x264) | veryfast | ultrafast |
 
 Estos valores solo son defaults: el usuario puede cambiarlos en Ajustes en
 cualquier momento, y una configuración existente no se modifica.
+
+## Requisitos de sistema
+
+OBS 28 en adelante requiere **Windows 10 u 11 de 64 bits**. Para PCs con
+Windows 7 u 8 hay que usar OBS 27.2.4 (última versión con Qt5), que no es
+este código base.
+
+QuickSync requiere una CPU Intel con gráficos integrados y el controlador Intel
+instalado. El H.264 por QuickSync existe desde las CPUs Core de 2.ª generación,
+pero la calidad y el rendimiento varían por modelo: pruébalo en la PC real. Si
+no está disponible, el perfil usa x264 por software.
 
 ## Consejos para equipos muy limitados
 
 - Usa un codificador por hardware si tu PC lo tiene (NVENC, QuickSync o AMF).
   Es la mejora más grande de CPU.
-- Mantén la FPS en 30. Cambia a 60 solo si la CPU lo aguanta.
+- Si 720p60 se congela, baja a 30 FPS en Ajustes → Video.
 - Desactiva la vista previa (clic derecho en la vista previa → "Disable Preview") mientras transmites.
 - Quita fuentes de navegador y filtros que no uses.
 
