@@ -332,7 +332,12 @@ VolumeMeter::VolumeMeter(QWidget *parent, obs_source_t *source)
 	if (!updateTimer) {
 		updateTimer = new QTimer(qApp);
 		updateTimer->setTimerType(Qt::PreciseTimer);
+#ifdef OBS_LOW_END_PROFILE
+		/* Low-end profile: refresh audio meters at ~30 Hz instead of ~60 Hz */
+		updateTimer->start(33);
+#else
 		updateTimer->start(16);
+#endif
 	}
 
 	connect(updateTimer, &QTimer::timeout, this, [this]() {

@@ -28,6 +28,12 @@ OBSBasicPreview::OBSBasicPreview(QWidget *parent, Qt::WindowFlags flags) : OBSQT
 {
 	ResetScrollingOffset();
 	setMouseTracking(true);
+
+#ifdef OBS_LOW_END_PROFILE
+	/* Low-end profile: the preview does not need the full canvas rate */
+	connect(this, &OBSQTDisplay::DisplayCreated, this,
+		[](OBSQTDisplay *window) { obs_display_set_max_fps(window->GetDisplay(), 30); });
+#endif
 }
 
 OBSBasicPreview::~OBSBasicPreview()

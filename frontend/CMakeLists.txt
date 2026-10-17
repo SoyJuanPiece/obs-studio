@@ -99,6 +99,10 @@ foreach(graphics_library IN ITEMS opengl metal d3d11)
   endif()
 endforeach()
 
+if(ENABLE_LOW_END)
+  target_compile_definitions(obs-studio PRIVATE OBS_LOW_END_PROFILE)
+endif()
+
 get_target_property(target_sources obs-studio SOURCES)
 set(target_cpp_sources ${target_sources})
 set(target_hpp_sources ${target_sources})

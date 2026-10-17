@@ -246,6 +246,18 @@ void render_display(struct obs_display *display)
 
 	pthread_mutex_lock(&display->draw_info_mutex);
 
+	if (display->max_fps) {
+		const uint64_t now = os_gettime_ns();
+		const uint64_t min_interval_ns = 1000000000ULL / display->max_fps;
+
+		if (display->last_render_ns && (now - display->last_render_ns) < min_interval_ns) {
+			/* Too soon: keep the last presented frame and skip this redraw. */
+			pthread_mutex_unlock(&display->draw_info_mutex);
+			return;
+		}
+		display->last_render_ns = now;
+	}
+
 	cx = display->next_cx;
 	cy = display->next_cy;
 	update_color_space = display->update_color_space;
@@ -287,6 +299,17 @@ void obs_display_set_enabled(obs_display_t *display, bool enable)
 bool obs_display_enabled(obs_display_t *display)
 {
 	return display ? display->enabled : false;
+}
+
+void obs_display_set_max_fps(obs_display_t *display, uint32_t fps)
+{
+	if (!display)
+		return;
+
+	pthread_mutex_lock(&display->draw_info_mutex);
+	display->max_fps = fps;
+	display->last_render_ns = 0;
+	pthread_mutex_unlock(&display->draw_info_mutex);
 }
 
 void obs_display_set_background_color(obs_display_t *display, uint32_t color)

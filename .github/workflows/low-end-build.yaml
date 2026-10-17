@@ -1,0 +1,164 @@
+name: Low-End Build
+run-name: ${{ github.ref_name }} low-end build 🧪
+# Builds the default profile and the ENABLE_LOW_END profile on Linux and
+# Windows for arena/** branches. The upstream CI only runs on master and
+# release branches, so this workflow is what verifies changes on these branches.
+on:
+  push:
+    branches:
+      - 'arena/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.ref }}'
+  cancel-in-progress: true
+jobs:
+  linux-build:
+    name: Linux 🐧 (${{ matrix.profile }})
+    runs-on: ubuntu-26.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - profile: default
+            low_end: 'OFF'
+          - profile: low-end
+            low_end: 'ON'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Create local version tag 🏷️
+        # This fork has no release tags, and OBS derives its version from
+        # `git describe`, which fails without one. The tag is local to this job.
+        run: git tag -f 0.0.1-arena
+
+      - name: Install build dependencies 🛍️
+        run: |
+          sudo apt-get update
+          # Same package list as .github/scripts/utils.zsh/setup_ubuntu
+          sudo apt-get install -y --no-install-recommends \
+            build-essential libglib2.0-dev \
+            extra-cmake-modules lsb-release dh-cmake \
+            libcurl4-openssl-dev \
+            libavcodec-dev libavdevice-dev libavfilter-dev libavformat-dev libavutil-dev \
+            libswresample-dev libswscale-dev \
+            libjansson-dev \
+            libx11-xcb-dev \
+            libgles2-mesa-dev \
+            libwayland-dev \
+            libpipewire-0.3-dev \
+            libpulse-dev \
+            libx264-dev \
+            libmbedtls-dev \
+            libgl1-mesa-dev \
+            uthash-dev \
+            libsimde-dev \
+            libluajit-5.1-dev python3-dev \
+            libx11-dev libxcb-randr0-dev libxcb-shm0-dev libxcb-xinerama0-dev \
+            libxcb-composite0-dev libxinerama-dev libxcb1-dev libx11-xcb-dev libxcb-xfixes0-dev \
+            swig libcmocka-dev libxss-dev libglvnd-dev \
+            libxkbcommon-dev libatk1.0-dev libatk-bridge2.0-dev libxcomposite-dev libxdamage-dev \
+            libasound2-dev libfdk-aac-dev libfontconfig-dev libfreetype6-dev libjack-jackd2-dev \
+            libsndio-dev libspeexdsp-dev libudev-dev libv4l-dev libva-dev libvlc-dev \
+            libpci-dev libdrm-dev \
+            nlohmann-json3-dev libwebsocketpp-dev libasio-dev libqrcodegencpp-dev \
+            libffmpeg-nvenc-dev librist-dev libsrt-openssl-dev \
+            qt6-base-dev libqt6svg6-dev qt6-base-private-dev \
+            libvpl-dev libvpl2
+
+      - name: Download Chromium Embedded Framework 📦
+        run: |
+          set -euo pipefail
+          read -r version base_url sha256 < <(jq -r '
+            .configurePresets[]
+            | select(.name == "dependencies")
+            | .vendor["obsproject.com/obs-studio"].dependencies.cef
+            | "\(.version) \(.baseUrl) \(.hashes["ubuntu-x86_64"])"
+          ' CMakePresets.json)
+          file="cef_binary_${version}_linux_x86_64.tar.xz"
+          dir="${GITHUB_WORKSPACE}/.deps/cef_binary_${version}_linux_x86_64"
+          mkdir -p "${GITHUB_WORKSPACE}/.deps" && cd "${GITHUB_WORKSPACE}/.deps"
+          curl --show-error --silent --location -O "${base_url}/${file}"
+          echo "${sha256}  ${file}" | sha256sum --check
+          mkdir -p "${dir}"
+          tar -C "${dir}" --strip-components 1 -xJf "${file}"
+          echo "CEF_ROOT_DIR=${dir}" >> "${GITHUB_ENV}"
+
+      - name: Configure ⚙️
+        run: |
+          set -euo pipefail
+          cmake --preset ubuntu-ci \
+            -DENABLE_LOW_END=${{ matrix.low_end }} \
+            -DENABLE_CCACHE=OFF \
+            -DENABLE_BROWSER=ON \
+            -DCEF_ROOT_DIR="${CEF_ROOT_DIR}" 2>&1 | tee configure.log
+          if [ "${{ matrix.low_end }}" = "ON" ]; then
+            grep -q "OBS Low-End profile enabled" configure.log
+          fi
+
+      - name: Build 🧱
+        run: cmake --build build_ubuntu --config RelWithDebInfo --parallel
+
+      - name: Verify low-end module selection
+        if: matrix.low_end == 'ON'
+        run: |
+          set -euo pipefail
+          for module in aja decklink obs-vst vlc-video; do
+            if find build_ubuntu -name "${module}.so*" | grep -q .; then
+              echo "::error::${module} should not be built with ENABLE_LOW_END"
+              exit 1
+            fi
+          done
+          echo "Excluded modules are absent, as expected."
+
+  windows-build:
+    name: Windows 🪟 (${{ matrix.profile }})
+    runs-on: windows-2025-vs2026
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - profile: default
+            cmake_option: '-DENABLE_LOW_END=OFF'
+          - profile: low-end
+            cmake_option: '-DENABLE_LOW_END=ON'
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          submodules: recursive
+          fetch-depth: 1
+
+      - name: Create local version tag 🏷️
+        # This fork has no release tags, and OBS derives its version from
+        # `git describe`, which fails without one. The tag is local to this job.
+        run: git tag -f 0.0.1-arena
+
+      - name: Build OBS Studio 🧱
+        env:
+          TWITCH_CLIENTID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_HASH: ${{ secrets.TWITCH_HASH }}
+          RESTREAM_CLIENTID: ${{ secrets.RESTREAM_CLIENTID }}
+          RESTREAM_HASH: ${{ secrets.RESTREAM_HASH }}
+          YOUTUBE_CLIENTID: ${{ secrets.YOUTUBE_CLIENTID }}
+          YOUTUBE_CLIENTID_HASH: ${{ secrets.YOUTUBE_CLIENTID_HASH }}
+          YOUTUBE_SECRET: ${{ secrets.YOUTUBE_SECRET }}
+          YOUTUBE_SECRET_HASH: ${{ secrets.YOUTUBE_SECRET_HASH }}
+          GPU_PRIORITY_VAL: ${{ secrets.GPU_PRIORITY_VAL }}
+        run: |
+          .\.github\scripts\Build-Windows.ps1 -Target x64 -Configuration RelWithDebInfo -CmakeOptions '${{ matrix.cmake_option }}'
+
+      - name: Upload build 📡
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: obs-studio-windows-x64-${{ matrix.profile }}-${{ github.sha }}
+          path: build_x64/install
+          if-no-files-found: error

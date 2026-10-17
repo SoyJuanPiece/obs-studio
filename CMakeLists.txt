@@ -18,6 +18,11 @@ include(helpers)
 option(ENABLE_FRONTEND "Enable building with UI (requires Qt)" ON)
 option(ENABLE_SCRIPTING "Enable scripting support" ON)
 option(ENABLE_HEVC "Enable HEVC encoders" ON)
+option(
+  ENABLE_LOW_END
+  "Build the lightweight profile for low-end PCs (skips heavy optional modules and uses lighter defaults)"
+  OFF
+)
 
 add_subdirectory(libobs)
 if(OS_WINDOWS)
@@ -31,6 +36,10 @@ endif()
 add_subdirectory(plugins)
 
 add_subdirectory(test/test-input)
+
+if(ENABLE_LOW_END)
+  message(STATUS "OBS Low-End profile enabled")
+endif()
 
 add_subdirectory(frontend)
 
