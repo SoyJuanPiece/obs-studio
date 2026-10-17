@@ -4,6 +4,12 @@ Este perfil de compilación reduce la carga de OBS en equipos con poca CPU,
 poca RAM o sin GPU dedicada, manteniendo las funciones necesarias para
 transmitir y grabar.
 
+## Compilación automática (CI)
+
+El workflow `.github/workflows/low-end-build.yaml` compila el perfil normal y
+el perfil ligero, en Linux y Windows, en cada push a una rama `arena/**`. Los
+artefactos de Windows quedan en la ejecución del workflow (`build_x64/install`).
+
 ## Compilar
 
 ```sh
