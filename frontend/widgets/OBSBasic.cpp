@@ -761,7 +761,12 @@ bool OBSBasic::InitBasicConfigDefaults()
 	config_set_default_uint(activeConfiguration, "Video", "FPSNum", 30);
 #endif
 	config_set_default_uint(activeConfiguration, "Video", "FPSDen", 1);
+#ifdef OBS_LOW_END_PROFILE
+	/* Low-end profile: bilinear is cheaper than bicubic whenever scaling happens */
+	config_set_default_string(activeConfiguration, "Video", "ScaleType", "bilinear");
+#else
 	config_set_default_string(activeConfiguration, "Video", "ScaleType", "bicubic");
+#endif
 	config_set_default_string(activeConfiguration, "Video", "ColorFormat", "NV12");
 	config_set_default_string(activeConfiguration, "Video", "ColorSpace", "709");
 	config_set_default_string(activeConfiguration, "Video", "ColorRange", "Partial");

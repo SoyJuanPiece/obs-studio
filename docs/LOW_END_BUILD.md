@@ -42,6 +42,20 @@ y los módulos de captura de tu plataforma.
 Estos valores solo son defaults: el usuario puede cambiarlos en Ajustes en
 cualquier momento, y una configuración existente no se modifica.
 
+## Cambios de código (además de los valores por defecto)
+
+- **Límite de FPS en la vista previa** (30 FPS con el perfil activo). Nueva
+  función `obs_display_set_max_fps()` en libobs (`libobs/obs-display.c`): los
+  cuadros que llegan antes del intervalo se saltan y se mantiene la última
+  imagen. Solo la vista previa principal lo usa; proyectores y otros displays
+  no cambian.
+- **Medidores de audio a ~30 Hz** en vez de ~60 Hz
+  (`frontend/components/VolumeMeter.cpp`).
+- **Escalado bilineal** por defecto (solo afecta cuando hay que escalar).
+
+Estos cambios no quitan funciones: la vista previa sigue funcionando, solo se
+actualiza menos seguido.
+
 ## Requisitos de sistema
 
 OBS 28 en adelante requiere **Windows 10 u 11 de 64 bits**. Para PCs con

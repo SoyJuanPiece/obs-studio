@@ -1050,6 +1050,13 @@ EXPORT void obs_display_remove_draw_callback(obs_display_t *display,
 EXPORT void obs_display_set_enabled(obs_display_t *display, bool enable);
 EXPORT bool obs_display_enabled(obs_display_t *display);
 
+/** Limits how often this display is redrawn. Frames that come faster than
+ * the limit are skipped and the last presented image stays on screen.
+ * Use 0 to render every frame (the default). Lowering this saves GPU and CPU
+ * work for displays such as the preview, where high refresh rates are not
+ * needed. */
+EXPORT void obs_display_set_max_fps(obs_display_t *display, uint32_t fps);
+
 EXPORT void obs_display_set_background_color(obs_display_t *display, uint32_t color);
 
 EXPORT void obs_display_size(obs_display_t *display, uint32_t *width, uint32_t *height);

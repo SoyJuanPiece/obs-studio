@@ -296,6 +296,8 @@ struct obs_display {
 	uint32_t cx, cy;
 	uint32_t next_cx, next_cy;
 	uint32_t background_color;
+	uint32_t max_fps;        /* 0 = render every frame */
+	uint64_t last_render_ns; /* protected by draw_info_mutex */
 	gs_swapchain_t *swap;
 	pthread_mutex_t draw_callbacks_mutex;
 	pthread_mutex_t draw_info_mutex;
