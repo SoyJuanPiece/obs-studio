@@ -32,6 +32,11 @@ jobs:
           submodules: recursive
           fetch-depth: 1
 
+      - name: Create local version tag 🏷️
+        # This fork has no release tags, and OBS derives its version from
+        # `git describe`, which fails without one. The tag is local to this job.
+        run: git tag -f 0.0.1-arena
+
       - name: Install build dependencies 🛍️
         run: |
           sudo apt-get update
@@ -131,6 +136,11 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 1
+
+      - name: Create local version tag 🏷️
+        # This fork has no release tags, and OBS derives its version from
+        # `git describe`, which fails without one. The tag is local to this job.
+        run: git tag -f 0.0.1-arena
 
       - name: Build OBS Studio 🧱
         env:
