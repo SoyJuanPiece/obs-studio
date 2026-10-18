@@ -76,7 +76,9 @@ jobs:
 
       - name: Fetch version tags 🏷️
         # The version is derived from `git describe`, which needs release tags.
-        run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
 
       - name: Set Up Environment 🔧
         id: setup
@@ -200,7 +202,9 @@ jobs:
 
       - name: Fetch version tags 🏷️
         # The version is derived from `git describe`, which needs release tags.
-        run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
 
       - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: ccache-cache
@@ -325,7 +329,9 @@ jobs:
 
       - name: Fetch version tags 🏷️
         # The version is derived from `git describe`, which needs release tags.
-        run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
 
       - name: Set Up Environment 🔧
         id: setup
@@ -410,7 +416,9 @@ jobs:
 
       - name: Fetch version tags 🏷️
         # The version is derived from `git describe`, which needs release tags.
-        run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
+        run: |
+          git config --global --add safe.directory "${GITHUB_WORKSPACE}"
+          git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
 
       - name: Build OBS Studio 🧱
         uses: ./.github/actions/build-obs
