@@ -70,6 +70,10 @@ jobs:
         shell: zsh --no-rcs --errexit --pipefail {0}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Fetch version tags 🏷️
+        # The version is derived from `git describe`, which needs release tags.
+        run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
         with:
           submodules: recursive
           fetch-depth: 0
@@ -190,6 +194,10 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Fetch version tags 🏷️
+        # The version is derived from `git describe`, which needs release tags.
+        run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
         with:
           submodules: recursive
           fetch-depth: 0
@@ -310,6 +318,10 @@ jobs:
           echo ::endgroup::
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Fetch version tags 🏷️
+        # The version is derived from `git describe`, which needs release tags.
+        run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
         with:
           submodules: recursive
           fetch-depth: 0
@@ -392,6 +404,10 @@ jobs:
         shell: pwsh
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Fetch version tags 🏷️
+        # The version is derived from `git describe`, which needs release tags.
+        run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
         with:
           submodules: recursive
           fetch-depth: 0
