@@ -70,13 +70,13 @@ jobs:
         shell: zsh --no-rcs --errexit --pipefail {0}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: Fetch version tags 🏷️
         # The version is derived from `git describe`, which needs release tags.
         run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
-        with:
-          submodules: recursive
-          fetch-depth: 0
 
       - name: Set Up Environment 🔧
         id: setup
@@ -194,13 +194,13 @@ jobs:
         shell: bash
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: Fetch version tags 🏷️
         # The version is derived from `git describe`, which needs release tags.
         run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
-        with:
-          submodules: recursive
-          fetch-depth: 0
 
       - uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         id: ccache-cache
@@ -318,14 +318,14 @@ jobs:
           echo ::endgroup::
 
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Fetch version tags 🏷️
-        # The version is derived from `git describe`, which needs release tags.
-        run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
         with:
           submodules: recursive
           fetch-depth: 0
           set-safe-directory: ${{ env.GITHUB_WORKSPACE }}
+
+      - name: Fetch version tags 🏷️
+        # The version is derived from `git describe`, which needs release tags.
+        run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
 
       - name: Set Up Environment 🔧
         id: setup
@@ -404,13 +404,13 @@ jobs:
         shell: pwsh
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          submodules: recursive
+          fetch-depth: 0
 
       - name: Fetch version tags 🏷️
         # The version is derived from `git describe`, which needs release tags.
         run: git fetch --no-tags --no-recurse-submodules --force https://github.com/obsproject/obs-studio.git '+refs/tags/*:refs/tags/*'
-        with:
-          submodules: recursive
-          fetch-depth: 0
 
       - name: Build OBS Studio 🧱
         uses: ./.github/actions/build-obs
